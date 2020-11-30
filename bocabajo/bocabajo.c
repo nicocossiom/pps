@@ -7,68 +7,58 @@ void incr (int *pint);
 
 int main(int argc, char *argv[]){
     argv0="bocabajo";
-    char lineas[2048 + 1]; //plus a '\0' character to mark the end of the string
-    char **matrix;
-    int n=0;
+    char lineas[2048 + 1]=NULL; //plus a '\0' character to mark the end of the string
+    char **arrLineas=NULL;
+    int counter=0;
     if(argc<2){
-        matrix=malloc(sizeof(char *));
+        arrLineas=malloc(sizeof(char *));
         while(fgets(lineas, sizeof lineas, stdin)!=NULL){
-            incr(&n);
-            matrix=realloc(matrix, (sizeof(char *))*(n+1));
-            if(matrix==NULL){
+            incr(&counter);
+            arrLineas=realloc(arrLineas, (sizeof(char *))*(counter+1));
+            if(arrLineas==NULL){
                 Error(EX_OSERR, "No se pudo ubicar la memoria dinámica necesaria.");
             }
-            matrix[n]=strdup(lineas);
-        }
-        while(n>=1){
-            printf("%s", matrix[n]);
-            n--;
-        }
-        free(matrix);
-        exit(0);
+            arrLineas[counter]=strdup(lineas); }
+        while(counter>=1){ 
+            printf("%s", arrLineas[counter]); 
+            counter--; } 
+            free(arrLineas); 
+            exit(0); } 
+            else if(argc==2 && (strcmp(argv[1], "-h")==0 || strcmp(argv[1], "--help")==0) || strcmp(argv[1], "ayuda")==0){ 
+                printf("bocabajo: Uso: bocabajo [ fichero... ]\n bocabajo: Invierte el orden de las lineas de los ficheros (o de la entrada).\n", stdout);
+            exit(0);
     }
-    else if(argc==2 && (strcmp(argv[1], "-h")==0 || strcmp(argv[1], "--help")==0) || strcmp(argv[1], "ayuda")==0){
-        printf("bocabajo: Uso: bocabajo [ fichero... ]\n bocabajo: Invierte el orden de las lı́neas de los ficheros (o de la entrada).\n", stdout);
-        exit(0);
-    }
-    int arg=1;
-    matrix=malloc(sizeof(char *)*(n+1));
-    while(argv[arg]!=NULL){
+    int numfile = sizeof(argv[])/sizeof (*char);
+    arrLineas=malloc(sizeof(char *)*(counter+1));
+    while(argv[numfile]!=NULL){
         FILE *ptr;
-        char lineas[2049];
-        ptr=fopen(argv[arg], "r");
+        char *lineas[2048 + 1];
+        ptr=fopen(argv[numfile], "r");
         if(ptr!=NULL){
             while(fgets(lineas, sizeof (lineas), ptr)!=NULL){
-                incr(&n);
-                matrix=realloc(matrix, (sizeof(char *))*(n+1));
-                if(matrix==NULL){
-                    Error(EX_OSERR, "No se pudo ubicar la memoria dinámica necesaria.");
+                counter++;
+                arrLineas=realloc(arrLineas, (sizeof(char *))*(counter+1));
+                if(arrLineas==NULL){
+                    Error(EX_OSERR, "Fallo al ubicar datos en memoria dinamica");
                 }
-                matrix[n]=strdup(lineas);
+            strcpy(arrLineas[counter], strdup(lineas));
             }
             fclose(ptr);
-            incr(&arg);
+            numfile--;
         }
         else{
-            if (strstr(*ptr, ".txt")==1){
-                Error(EX_NOINPUT, "El fichero \"%s\" no puede ser leido.", argv[arg]);
-            }
-          else{
             
           }
         }
     }
-    while(n>=1){
-        printf("%s", matrix[n]);
-        char *aux=matrix[n];
+    while(counter>=1){
+        printf("%s", arrLineas[counter]);
+        char *aux=arrLineas[counter];
         if(aux[strlen(aux)-1]!='\n'){
             printf("\n");
         }
-        n--;
+        counter--;
     }
-    free(matrix);
+    free(arrLineas);
     exit(0);
-}
-void incr (int *pint) {
-    (*pint)++;
 }
