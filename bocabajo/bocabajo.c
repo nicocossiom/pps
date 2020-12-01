@@ -3,19 +3,13 @@
 #include <string.h>
 #include "auxiliar.h"
 
-void printer(int lineaCounter, char **arrLineas);
 int numFiles;
 char *nomArchivo;
 int lineCounter;
 char **arrLineas;
 char line [2049];
    
-    void printer(int lineCounter, char **arrLineas){        
-        while(lineCounter>0){
-           printf("%s", arrLineas[lineCounter-1]);
-           lineCounter--;
-        }
-    }
+        
 
 int main(int argc, char **argv)
 {
@@ -37,7 +31,10 @@ int main(int argc, char **argv)
             arrLineas[lineCounter] = strdup(line);//metemos linea en memoria dinamica
             lineCounter++;
         }    
-        printer(lineCounter, arrLineas); 
+       while(lineCounter>0){
+           printf("%s", arrLineas[lineCounter-1]);
+           lineCounter--;
+        }
         free(arrLineas);
         exit(EX_OK); 
     }
@@ -45,21 +42,24 @@ int main(int argc, char **argv)
     numFiles = argc-1; //ultimo archivo
     while (numFiles!=0){
         char **arrLineas = malloc((sizeof (char *)) * (lineCounter + 1)); //inicializamos memoria dinámica con un espacio
-        FILE *ptrFile = fopen(argv[numFiles], "r");
-        if (ptrFile==NULL){
+        FILE *ptrFile ;
+        if ((ptrFile= fopen(argv[numFiles], "r"))==NULL){
             Error(EX_NOINPUT, "El archivo %s no existe en el directorio ", argv[numFiles]);
         }
         numFiles--;
         while(fgets(line, 2049, ptrFile)!=NULL){
             arrLineas = realloc (arrLineas, (sizeof(char *))*(lineCounter+1));
             if(arrLineas==NULL){
-                Error(EX_OSERR, "Error al reasignar memoria dinamica \n");
+                Error(EX_OSERR, "Error al reasignar memoria dinamica ");
             }
             arrLineas[lineCounter] = strdup(line);//metemos linea en memoria dinamica
             lineCounter++;
         }
         fclose(ptrFile);
-        printer(lineCounter, arrLineas);
+        while(lineCounter>0){
+           printf("%s", arrLineas[lineCounter-1]);
+           lineCounter--;
+        }
         free(arrLineas);
     }
     exit(EX_OK);
